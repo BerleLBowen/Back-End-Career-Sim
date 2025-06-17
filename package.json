@@ -2,11 +2,12 @@
   "name": "back-end-career-sim",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-  "dev": "nodemon server.js",
-  "db:schema": "psql -d market -f db/schema.sql",
-  "db:seed": "node --env-file=.env db/seed.js"
-},
+    "dev": "nodemon server.js",
+    "db:schema": "psql -d market -f db/schema.sql",
+    "db:seed": "node --env-file=.env db/seed.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
