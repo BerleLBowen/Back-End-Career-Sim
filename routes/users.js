@@ -3,26 +3,28 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pg from "pg";
 
-const { Pool } = pg;
-
 const router = express.Router();
+const { Client } = pg;
 
-const pool = new Pool({
-  user: "Jorge",
-  host: "localhost",
-  database: "market",
-  password: "password",
-  port: 5432,
+const client = new Client({
+  // user: process.env.PG_USER || "Jorge",
+  // host: process.env.PG_HOST || "localhost",
+  // database: process.env.PG_DATABASE || "market",
+  // password: process.env.PG_PASSWORD || "password",
+  // port: process.env.PG_PORT || 5432,
 });
 
-const JWT_SECRET = "secretKey";
+client.connect();
 
-//post users/register
+const JWT_SECRET = process.env.JWT_SECRET || "secretKey";
+
+//post users register
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const userExists = await pool.query(
+    // Check if user exists
+    const userExists = await client.query(
       "SELECT * FROM users WHERE username = $1",
       [username]
     );
@@ -33,7 +35,7 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await pool.query(
+    const newUser = await client.query(
       "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id, username",
       [username, hashedPassword]
     );
@@ -45,13 +47,12 @@ router.post("/register", async (req, res) => {
   }
 });
 
-//post users/login
-
+//post user login
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await pool.query("SELECT * FROM users WHERE username = $1", [
+    const user = await client.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
 
@@ -67,7 +68,8 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       { id: user.rows[0].id, username: user.rows[0].username },
-      JWT_SECRET
+      JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
     res.json({ token });
@@ -77,8 +79,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-//get users/me
-
+//verify jwt
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -91,10 +92,10 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
-
+//get users
 router.get("/me", authenticateToken, async (req, res) => {
   try {
-    const user = await pool.query(
+    const user = await client.query(
       "SELECT id, username FROM users WHERE id = $1",
       [req.user.id]
     );
