@@ -1,7 +1,7 @@
 import express from "express";
 const app = express();
 import usersRouter from "./routes/users.js";
-
+app.use("/users", userRoutes);
 app.use(express.json());
 
 // Add routers here later
