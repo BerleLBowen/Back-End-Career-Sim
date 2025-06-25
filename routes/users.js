@@ -7,11 +7,11 @@ const router = express.Router();
 const { Client } = pg;
 
 const client = new Client({
-  // user: process.env.PG_USER || "Jorge",
-  // host: process.env.PG_HOST || "localhost",
-  // database: process.env.PG_DATABASE || "market",
-  // password: process.env.PG_PASSWORD || "password",
-  // port: process.env.PG_PORT || 5432,
+  user: process.env.PG_USER || "Jorge",
+  host: process.env.PG_HOST || "localhost",
+  database: process.env.PG_DATABASE || "market",
+  password: process.env.PG_PASSWORD || "password",
+  port: process.env.PG_PORT || 5432,
 });
 
 client.connect();
