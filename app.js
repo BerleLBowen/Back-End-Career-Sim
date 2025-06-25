@@ -1,13 +1,16 @@
 import express from "express";
+import cors from "cors";
+import usersRouter from "./routes/users.js";
+import booksRouter from "./routes/books.js";
+import ordersRouter from "./routes/orders.js";
 const app = express();
-
+app.use(cors());
 app.use(express.json());
-
-// Add routers here later
-
+app.use("/users", usersRouter);
+app.use("/books", booksRouter);
+app.use("/orders", ordersRouter);
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).send("Something went wrong.");
+console.error(err);
+res.status(500).send("Something went wrong.");
 });
-
 export default app;
