@@ -1,10 +1,14 @@
 import express from "express";
-const app = express();
 import usersRouter from "./routes/users.js";
-app.use("/users", userRoutes);
+const app = express();
+
 app.use(express.json());
 
-// Add routers here later
+app.use("/users", usersRouter);
+
+app.get("/", (req, res) => {
+  res.send("API is working!");
+});
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -13,6 +17,5 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
-app.use("/users", usersRouter);
 
 export default app;
